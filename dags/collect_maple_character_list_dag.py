@@ -47,3 +47,6 @@ with DAG(
         producer.flush()
 
 
+    publish_message()
+
+
