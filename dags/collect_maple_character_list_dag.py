@@ -35,7 +35,7 @@ with DAG(
             "api_name" : 'collect_maple_character_list_dag'
         }
 
-        producer = Producer({'bootstrap_servers' : BROKER_LIST})
+        producer = Producer({'bootstrap.servers' : BROKER_LIST})
 
         producer.produce(
             topic='maple_character_list',
