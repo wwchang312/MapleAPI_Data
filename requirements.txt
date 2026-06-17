@@ -1,0 +1,8 @@
+confluent-kafka==2.14.0
+apache-airflow==3.0.2
+apache-airflow-providers-common-compat ==1.15.0
+apache-airflow-providers-common-sql ==2.0.1
+apache-airflow-providers-odbc==4.12.3
+pendulum==3.2.0
+requests
+python-dotenv
