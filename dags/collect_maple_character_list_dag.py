@@ -4,6 +4,7 @@ from airflow.decorators import task
 from confluent_kafka import Producer
 import uuid
 import json
+import logging
 
 '''
 캐릭터 리스트는 별도의 입력 파라미터를 요구하지 않으므로 매일 단독 배치로 호출하여 갱신한다.
@@ -37,14 +38,24 @@ with DAG(
 
         producer = Producer({'bootstrap.servers' : BROKER_LIST})
 
+        def delivery_report(err, msg):
+            if err is not None:
+                raise Exception(f"Message delivery failed: {err}")
+            else:
+                print(
+                    f"Message delivered to {msg.topic()} "
+                    f"[partition={msg.partition()}] "
+                    f"offset={msg.offset()}"
+                )
+
+
         producer.produce(
             topic='maple_character_list',
-            value=json.dumps(message).encode('utf-8')
+            value=json.dumps(message).encode('utf-8'),
+            callback=delivery_report
         )
 
-        producer.poll(0)
-
-        producer.flush()
+        producer.flush(10)
 
 
     publish_message()
