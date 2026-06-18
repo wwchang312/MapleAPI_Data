@@ -50,7 +50,7 @@ with DAG(
 
 
         producer.produce(
-            topic='maple_character_list',
+            topic='collect_maple_character_list_dag',
             value=json.dumps(message).encode('utf-8'),
             callback=delivery_report
         )
