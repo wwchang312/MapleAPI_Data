@@ -33,7 +33,8 @@ with DAG(
         message = {
             "job_id" : job_id,
             "run_id" : run_id,
-            "api_name" : 'collect_maple_character_list_dag'
+            "api_name" : 'collect_maple_character_list_dag',
+            "data_nm" : 'character/list' #호출 데이터 셋
         }
 
         producer = Producer({'bootstrap.servers' : BROKER_LIST})
