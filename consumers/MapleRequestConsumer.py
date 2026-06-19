@@ -40,7 +40,11 @@ class MapleRequestConsumer(BaseConsumer):
                 self.logger.info(f'파라미터 추출 시작')
                 msg_param_lst = [json.loads(msg.value().decode('utf-8')) for msg in msg_lst]
 
-                print(msg_param_lst)
+                # print(msg_param_lst)
+                print(msg_param_lst[0]['api_name'])
+                print(msg_param_lst[0]['character_name'])
+                print(msg_param_lst[0]['from_date'])
+                print(msg_param_lst[0]['to_date'])
 
         except KafkaException:
             self.logger.exception("Kafka exception occurred during message consumption")
