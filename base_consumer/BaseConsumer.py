@@ -10,7 +10,7 @@ class BaseConsumer:
     def get_logger(self,group_id):
         logger = logging.getLogger(group_id)
         logger.setLevel(logging.INFO)
-        handler = logging.Handler()
+        handler = logging.StreamHandler()
         handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - [%(levelname)s]:%(message)s'))
         logger.addHandler(handler)
 
