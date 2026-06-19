@@ -43,7 +43,6 @@ class MapleRequestConsumer(BaseConsumer):
                 # print(msg_param_lst)
                 print(msg_param_lst[0])
                 print(type(msg_param_lst[0].get('character_name')))
-
         except KafkaException:
             self.logger.exception("Kafka exception occurred during message consumption")
 
