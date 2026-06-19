@@ -1,7 +1,7 @@
 import logging
 from confluent_kafka import KafkaError,KafkaException
 
-class MapleRequestConsumer():
+class BaseConsumer:
     def __init__(self, group_id):
         self.BOOTSTRAP_SERVERS = 'broker01:9092,broker02:9092,broker03:9092'
         self.group_id = group_id
