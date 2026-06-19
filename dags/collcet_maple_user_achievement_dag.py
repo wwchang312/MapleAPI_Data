@@ -1,4 +1,4 @@
-from airflow.sdk import Dag
+from airflow.sdk import DAG
 from common.operators.MapleApiOperator import MapleApiOperator
 import pendulum
 
