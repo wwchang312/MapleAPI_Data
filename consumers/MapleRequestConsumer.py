@@ -1,18 +1,15 @@
-from dotenv import load_dotenv
-from base_consumer import BaseConsumer
+from base_consumer.BaseConsumer import BaseConsumer
 from confluent_kafka import Consumer,KafkaException
 import os
 
 
 #메이플스토리 OpenAPI 호출을 위한 공통된 url 정보를 활용하기 위한 basic consumer 생성
 
-load_dotenv()
-
 api_key = os.environ['x-nxopen-api-key']
 
 class MapleRequestConsumer(BaseConsumer):
     def __init__(self, group_id):
-        super().__init__(self,group_id)
+        super().__init__(group_id)
         self.topics=['collect_maple_character_list_dag']
 
         conf = {
@@ -53,3 +50,7 @@ class MapleRequestConsumer(BaseConsumer):
         finally:
             self.consumer.close()
             self.logger.info("Consumer closed.")
+
+if __name__ =='__main__':
+    maple_request_consumer =MapleRequestConsumer('maple_request_consumer')
+    maple_request_consumer.poll()
