@@ -5,7 +5,7 @@ import os
 
 #메이플스토리 OpenAPI 호출을 위한 공통된 url 정보를 활용하기 위한 basic consumer 생성
 
-api_key = os.environ['x-nxopen-api-key']
+api_key = os.environ['NEXON_API_KEY']
 
 class MapleRequestConsumer(BaseConsumer):
     def __init__(self, group_id):
