@@ -1,6 +1,7 @@
 from base_consumer.BaseConsumer import BaseConsumer
 from confluent_kafka import Consumer,KafkaException
 import os
+import json
 
 
 #메이플스토리 OpenAPI 호출을 위한 공통된 url 정보를 활용하기 위한 basic consumer 생성
@@ -37,7 +38,7 @@ class MapleRequestConsumer(BaseConsumer):
 
                 #kafka 메시징 큐로부터, 파라미터 추출
                 self.logger.info(f'파라미터 추출 시작')
-                msg_param_lst = [msg.value() for msg in msg_lst]
+                msg_param_lst = [json.loads(msg.value().decode('utf-8')) for msg in msg_lst]
 
                 print(msg_param_lst)
 
