@@ -7,7 +7,7 @@ import uuid
 import pendulum
 
 with DAG(
-        dag_id='collect_maple_character_list_dag',
+        dag_id='publish_maple_api_request_dag',
         schedule=None,
         start_date=pendulum.datetime(2025, 12, 1, tz="Asia/Seoul"),
         tags=['Maple', 'Character List'],
