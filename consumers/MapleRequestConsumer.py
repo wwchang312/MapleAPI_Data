@@ -40,9 +40,8 @@ class MapleRequestConsumer(BaseConsumer):
                 self.logger.info(f'파라미터 추출 시작')
                 msg_param_lst = [json.loads(msg.value().decode('utf-8')) for msg in msg_lst]
 
-                # print(msg_param_lst)
-                print(msg_param_lst[0])
-                print(list(msg_param_lst[0].get('character_name').split(',')))
+                return msg_param_lst
+
         except KafkaException:
             self.logger.exception("Kafka exception occurred during message consumption")
 
@@ -52,6 +51,8 @@ class MapleRequestConsumer(BaseConsumer):
         finally:
             self.consumer.close()
             self.logger.info("Consumer closed.")
+
+
 
 if __name__ =='__main__':
     maple_request_consumer =MapleRequestConsumer('maple_request_consumer')
