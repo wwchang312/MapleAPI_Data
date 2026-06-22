@@ -25,7 +25,6 @@ class MapleRequestConsumer(BaseConsumer):
 
     #consumer poll message
     def poll(self):
-        msg_param_lst=[]
         try:
             while True:
                 msg_lst = self.consumer.consume()
@@ -40,7 +39,8 @@ class MapleRequestConsumer(BaseConsumer):
                 #kafka 메시징 큐로부터, 파라미터 추출
                 self.logger.info(f'파라미터 추출 시작')
                 msg_param_lst = [json.loads(msg.value().decode('utf-8')) for msg in msg_lst]
-
+                print(msg_param_lst)
+                return msg_param_lst
 
 
         except KafkaException:
@@ -53,7 +53,7 @@ class MapleRequestConsumer(BaseConsumer):
             self.consumer.close()
             self.logger.info("Consumer closed.")
 
-        return msg_param_lst
+
 
 
 if __name__ =='__main__':
