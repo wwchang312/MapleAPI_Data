@@ -27,7 +27,7 @@ class AirflowKafkaConsumer(BaseConsumer):
     def poll(self):
         try:
             while True:
-                msg_lst = self.consumer.consume()
+                msg_lst = self.consumer.consume(num_messages=5)
                 if msg_lst is None or len(msg_lst) == 0: continue
 
                 self.logger.info(f'message count:{len(msg_lst)}')
