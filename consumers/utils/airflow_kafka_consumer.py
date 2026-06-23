@@ -16,7 +16,7 @@ class AirflowKafkaConsumer(BaseConsumer):
         conf = {
             'bootstrap.servers': self.BOOTSTRAP_SERVERS,
             'group.id': self.group_id,
-            'auto.offset.reset': 'earliest',
+            'auto.offset.reset': 'latest',
             'enable.auto.commit': 'false'
         }
 
