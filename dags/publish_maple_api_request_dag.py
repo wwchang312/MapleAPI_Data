@@ -77,17 +77,18 @@ with DAG(
         #파라미터
         character_name_lst = context.get('params').get('character_name').split(',')   #복수개의 캐릭터 명 입력시 split
 
-        #데이터 셋 명 None일시, 캐릭터 정보 조회 API 전체 호출
+        #데이터셋 미지정시 None으로 값 처리
         data_nm_lst = context.get('params').get('data_nm').split(',') if context.get('params').get('data_nm') else None
-        data_nm=ChangeParma(data_nm_lst,'character_info_dataset')
+
+        data_nm_param_lst=ChangeParma(data_nm_lst,'character_info_dataset')
 
         #입력받은 날짜 계산 및 파라미터 생성
         from_date = context.get('params').get('from_date')
         to_date = context.get('params').get('to_date')
-        date_param_lst = DateParamBuild(from_date,to_date)
+        date_param_builder = DateParamBuild(from_date,to_date)
+        date_param_lst=date_param_builder.make_date_list()
 
-
-        for character_name,date_param,data_nm in product(character_name_lst,date_param_lst,data_nm_lst):
+        for character_name,date_param,data_nm in product(character_name_lst,date_param_lst,data_nm_param_lst):
             msg = {"job_id" : job_id,
                    "run_id" : run_id,
                    "character_name" : character_name,
