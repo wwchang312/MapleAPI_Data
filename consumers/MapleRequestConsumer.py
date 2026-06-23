@@ -16,7 +16,7 @@ class MapleRequestConsumer(BaseConsumer):
         conf = {
             'bootstrap.servers': self.BOOTSTRAP_SERVERS,
             'group.id': self.group_id,
-            'auto.offset.reset': 'latest',
+            'auto.offset.reset': 'earliest',
             'enable.auto.commit': 'false'
         }
 
