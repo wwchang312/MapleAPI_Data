@@ -38,7 +38,7 @@ with DAG(
                 description= "조회 기준일 마지막일자"
             ),
             "data_nm" : Param(
-                type = "array",
+                type = ["array","null"],
                 title = "호출 데이터셋 지정",
                 example=["기본정보",
                          "인기도",
