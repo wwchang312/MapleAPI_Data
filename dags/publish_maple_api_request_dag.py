@@ -3,6 +3,7 @@ from airflow.decorators import task
 from confluent_kafka import Producer
 from datetime import date
 from common.utils.date_param import DateParamBuild
+from common.utils.change_param import ChangeParma
 from itertools import product
 import json
 import uuid
@@ -37,10 +38,32 @@ with DAG(
                 description= "조회 기준일 마지막일자"
             ),
             "data_nm" : Param(
-                type = ["null","string"],
+                type = "array",
                 title = "호출 데이터셋 지정",
-                description= "메이플스토리 openapi 중 캐릭터 정보 조회에 대한 API 호출을 시도시, 해당 API 명 입력 \n 입력방식은 character/ability와 같이 api 호출 url의 ''vi/'' 이후 부분 작성 \n 단, id는 제외"
-            )
+                example=["기본정보",
+                         "인기도",
+                         "종합_능력치",
+                         "하이퍼스탯",
+                         "성향",
+                         "어빌리티",
+                         "장착_장비",
+                         "장착_캐시_장비",
+                         "장착_심볼",
+                         "적용_세트효과",
+                         "장착_뷰티아이템",
+                         "장착_안드로이드",
+                         "장착_펫",
+                         "스킬",
+                         "링크스킬",
+                         "V매트릭스",
+                         "HEXA코어",
+                         "HEXA매트릭스_HEXA스탯",
+                         "무릉도장",
+                         "기타_능력치_영향_요소",
+                         "링_익스체인지_스킬_등록_장비",
+                         "예비_특수반지_장착_정보"],
+                description="미선택시, 전체 캐릭터 정보 조회 API 호출"
+                )
         }
 ) as dag:
 
@@ -48,14 +71,21 @@ with DAG(
 
     @task
     def publish_message(**context):
-
+        #실행정보
         job_id = str(uuid.uuid4())
         run_id = context['run_id']
+        #파라미터
         character_name_lst = context.get('params').get('character_name').split(',')   #복수개의 캐릭터 명 입력시 split
-        data_nm_lst = context.get('params').get('data_nm').split(',')
+
+        #데이터 셋 명 None일시, 캐릭터 정보 조회 API 전체 호출
+        data_nm_lst = context.get('params').get('data_nm').split(',') if context.get('params').get('data_nm') else None
+        data_nm=ChangeParma(data_nm_lst,'character_info_dataset')
+
+        #입력받은 날짜 계산 및 파라미터 생성
         from_date = context.get('params').get('from_date')
         to_date = context.get('params').get('to_date')
         date_param_lst = DateParamBuild(from_date,to_date)
+
 
         for character_name,date_param,data_nm in product(character_name_lst,date_param_lst,data_nm_lst):
             msg = {"job_id" : job_id,
