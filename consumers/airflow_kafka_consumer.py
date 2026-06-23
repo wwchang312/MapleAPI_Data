@@ -8,7 +8,7 @@ import json
 
 api_key = os.environ['NEXON_API_KEY']
 
-class MapleRequestConsumer(BaseConsumer):
+class AirflowKafkaConsumer(BaseConsumer):
     def __init__(self, group_id):
         super().__init__(group_id)
         self.topics=['collect_maple_character_list_dag']
@@ -57,5 +57,5 @@ class MapleRequestConsumer(BaseConsumer):
 
 
 if __name__ =='__main__':
-    maple_request_consumer =MapleRequestConsumer('maple_request_consumer')
-    maple_request_consumer.poll()
+    airflow_kafka_consumer =AirflowKafkaConsumer('maple_request_consumer')
+    airflow_kafka_consumer.poll()
