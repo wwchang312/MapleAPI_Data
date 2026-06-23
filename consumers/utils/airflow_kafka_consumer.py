@@ -40,6 +40,7 @@ class AirflowKafkaConsumer(BaseConsumer):
                 self.logger.info(f'파라미터 추출 시작')
                 msg_param_lst = [json.loads(msg.value().decode('utf-8')) for msg in msg_lst]
                 print(msg_param_lst)
+                print(type(msg_param_lst))
                 return msg_param_lst
 
 
