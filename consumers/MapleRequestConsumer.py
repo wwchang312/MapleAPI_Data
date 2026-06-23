@@ -57,5 +57,5 @@ class MapleRequestConsumer(BaseConsumer):
 
 
 if __name__ =='__main__':
-    maple_request_consumer =MapleRequestConsumer
+    maple_request_consumer =MapleRequestConsumer('maple_request_consumer')
     maple_request_consumer.poll()
