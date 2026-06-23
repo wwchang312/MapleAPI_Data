@@ -79,8 +79,8 @@ with DAG(
 
         #데이터셋 미지정시 None으로 값 처리
         data_nm_lst = context.get('params').get('data_nm').split(',') if context.get('params').get('data_nm') else None
-
-        data_nm_param_lst=ChangeParma(data_nm_lst,'character_info_dataset')
+        data_nm_builder=ChangeParma(data_nm_lst,'character_info_dataset')
+        data_nm_param_lst=data_nm_builder.mapping_array_alias()
 
         #입력받은 날짜 계산 및 파라미터 생성
         from_date = context.get('params').get('from_date')
