@@ -16,7 +16,7 @@ class MapleRequestConsumer(BaseConsumer):
         conf = {
             'bootstrap.servers': self.BOOTSTRAP_SERVERS,
             'group.id': self.group_id,
-            'auto.offset.reset': 'earliest',
+            'auto.offset.reset': 'latest',
             'enable.auto.commit': 'false'
         }
 
@@ -57,5 +57,5 @@ class MapleRequestConsumer(BaseConsumer):
 
 
 if __name__ =='__main__':
-    maple_request_consumer =MapleRequestConsumer('maple_request_consumer')
+    maple_request_consumer =MapleRequestConsumer
     maple_request_consumer.poll()
