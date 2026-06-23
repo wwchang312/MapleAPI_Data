@@ -15,7 +15,7 @@ class ChangeParma:
                 "하이퍼스탯": "character/hyper-stat",
                 "성향": "character/propensity",
                 "어빌리티": "character/ability",
-                "장착_장비": "item-equipment",
+                "장착_장비": "character/item-equipment",
                 "장착_캐시_장비": "character/cashitem-equipment",
                 "장착_심볼": "character/symbol-equipment",
                 "적용_세트효과": "character/set-effect",
