@@ -1,5 +1,3 @@
-
-
 class ChangeParma:
 
     def __init__(self,param:list[str],param_name:str):
