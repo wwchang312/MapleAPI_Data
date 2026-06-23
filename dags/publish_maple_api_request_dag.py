@@ -1,10 +1,13 @@
 from airflow.sdk import DAG,Param
 from airflow.decorators import task
 from confluent_kafka import Producer
-from datetime import datetime,timedelta,date
+from datetime import date
+from common.utils.date_param import DateParamBuild
+from itertools import product
 import json
 import uuid
 import pendulum
+
 
 with DAG(
         dag_id='publish_maple_api_request_dag',
@@ -36,7 +39,7 @@ with DAG(
             "data_nm" : Param(
                 type = ["null","string"],
                 title = "호출 데이터셋 지정",
-                description= "특정 dataset에 대하여 API 호출을 시도시, 해당 API 명 입력 \n 입력방식은 character/ability와 같이 api 호출 url의 ''vi/'' 이후 부분 작성"
+                description= "메이플스토리 openapi 중 캐릭터 정보 조회에 대한 API 호출을 시도시, 해당 API 명 입력 \n 입력방식은 character/ability와 같이 api 호출 url의 ''vi/'' 이후 부분 작성 \n 단, id는 제외"
             )
         }
 ) as dag:
@@ -48,37 +51,40 @@ with DAG(
 
         job_id = str(uuid.uuid4())
         run_id = context['run_id']
+        character_name_lst = context.get('params').get('character_name').split(',')   #복수개의 캐릭터 명 입력시 split
+        data_nm_lst = context.get('params').get('data_nm').split(',')
+        from_date = context.get('params').get('from_date')
+        to_date = context.get('params').get('to_date')
+        date_param_lst = DateParamBuild(from_date,to_date)
 
-        message = {
-            "job_id" : job_id,
-            "run_id" : run_id,
-            "api_name" : 'collect_maple_character_list_dag',
-            "character_name" : context.get('params').get('character_name'),
-            "from_date" : context.get('params').get('from_date'),
-            "to_date" : context.get('params').get('to_date'),
-            "data_nm" : context.get('params').get('data_nm')
-        }
+        for character_name,date_param,data_nm in product(character_name_lst,date_param_lst,data_nm_lst):
+            msg = {"job_id" : job_id,
+                   "run_id" : run_id,
+                   "character_name" : character_name,
+                   "date" : date_param,
+                   "data_nm" : data_nm
+                   }
 
-        producer = Producer({'bootstrap.servers' : BROKER_LIST})
+            producer = Producer({'bootstrap.servers' : BROKER_LIST})
 
-        def delivery_report(err, msg):
-            if err is not None:
-                raise Exception(f"Message delivery failed: {err}")
-            else:
-                print(
-                    f"Message delivered to {msg.topic()} "
-                    f"[partition={msg.partition()}] "
-                    f"offset={msg.offset()}"
-                )
+            def delivery_report(err, message):
+                if err is not None:
+                    raise Exception(f"Message delivery failed: {err}")
+                else:
+                    print(
+                        f"Message delivered to {message.topic()} "
+                        f"[partition={message.partition()}] "
+                        f"offset={message.offset()}"
+                    )
 
 
-        producer.produce(
-            topic='collect_maple_character_list_dag',
-            value=json.dumps(message).encode('utf-8'),
-            callback=delivery_report
-        )
+            producer.produce(
+                topic='collect_maple_character_list_dag',
+                value=json.dumps(msg).encode('utf-8'),
+                callback=delivery_report
+            )
 
-        producer.flush(10)
+            producer.flush(10)
 
 
     publish_message()
