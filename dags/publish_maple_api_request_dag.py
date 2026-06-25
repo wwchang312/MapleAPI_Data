@@ -38,31 +38,9 @@ with DAG(
                 description= "조회 기준일 마지막일자"
             ),
             "data_nm" : Param(
-                type = ["array","null"],
+                type = ["null","string"],
                 title = "호출 데이터셋 지정",
-                example=["기본정보",
-                         "인기도",
-                         "종합_능력치",
-                         "하이퍼스탯",
-                         "성향",
-                         "어빌리티",
-                         "장착_장비",
-                         "장착_캐시_장비",
-                         "장착_심볼",
-                         "적용_세트효과",
-                         "장착_뷰티아이템",
-                         "장착_안드로이드",
-                         "장착_펫",
-                         "스킬",
-                         "링크스킬",
-                         "V매트릭스",
-                         "HEXA코어",
-                         "HEXA매트릭스_HEXA스탯",
-                         "무릉도장",
-                         "기타_능력치_영향_요소",
-                         "링_익스체인지_스킬_등록_장비",
-                         "예비_특수반지_장착_정보"],
-                description="미선택시, 전체 캐릭터 정보 조회 API 호출"
+                description="미입력시, 전체 캐릭터 정보 조회 API 호출 \n 입력시에는, api의 endpoint 부분을 입력해줌. (ex: character/basic)"
                 )
         }
 ) as dag:
@@ -79,8 +57,8 @@ with DAG(
 
         #데이터셋 미지정시 None으로 값 처리
         data_nm_lst = context.get('params').get('data_nm').split(',') if context.get('params').get('data_nm') else None
-        data_nm_builder=ChangeParma(data_nm_lst,'character_info_dataset')
-        data_nm_param_lst=data_nm_builder.mapping_array_alias()
+        # data_nm_builder=ChangeParma(data_nm_lst,'character_info_dataset')
+        # data_nm_param_lst=data_nm_builder.mapping_array_alias()
 
         #입력받은 날짜 계산 및 파라미터 생성
         from_date = context.get('params').get('from_date')
@@ -88,7 +66,7 @@ with DAG(
         date_param_builder = DateParamBuild(from_date,to_date)
         date_param_lst=date_param_builder.make_date_list()
 
-        for character_name,date_param,data_nm in product(character_name_lst,date_param_lst,data_nm_param_lst):
+        for character_name,date_param,data_nm in product(character_name_lst,date_param_lst,data_nm_lst):
             msg = {"job_id" : job_id,
                    "run_id" : run_id,
                    "character_name" : character_name,
