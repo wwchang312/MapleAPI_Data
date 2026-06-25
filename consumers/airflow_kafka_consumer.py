@@ -1,12 +1,9 @@
 from base_consumer.BaseConsumer import BaseConsumer
 from confluent_kafka import Consumer,KafkaException
-import os
 import json
 
 
-#메이플스토리 OpenAPI 호출을 위한 공통된 url 정보를 활용하기 위한 basic consumer 생성
-
-api_key = os.environ['NEXON_API_KEY']
+#airflow "publish_maple_api_request_dag"에서 publishing한 파라미터를 consume
 
 class AirflowKafkaConsumer(BaseConsumer):
     def __init__(self, group_id):
@@ -27,7 +24,7 @@ class AirflowKafkaConsumer(BaseConsumer):
     def poll(self):
         try:
             while True:
-                msg_lst = self.consumer.consume(num_messages=5)
+                msg_lst = self.consumer.consume(num_messages=5,timeout=1.0)
                 if msg_lst is None or len(msg_lst) == 0: continue
 
                 self.logger.info(f'message count:{len(msg_lst)}')
@@ -39,10 +36,7 @@ class AirflowKafkaConsumer(BaseConsumer):
                 #kafka 메시징 큐로부터, 파라미터 추출
                 self.logger.info(f'파라미터 추출 시작')
                 msg_param_lst = [json.loads(msg.value().decode('utf-8')) for msg in msg_lst]
-                print(msg_param_lst)
-                print(type(msg_param_lst))
-                return msg_param_lst
-
+                self.extract_param(msg_param_lst) #Param을 각 key의 value를 List 타입으로 바꾸는 함수
 
         except KafkaException:
             self.logger.exception("Kafka exception occurred during message consumption")
@@ -54,7 +48,13 @@ class AirflowKafkaConsumer(BaseConsumer):
             self.consumer.close()
             self.logger.info("Consumer closed.")
 
-
+    #파라미터로 입력받은 값이 들어오기 때문에 형태가 고정된다. 따라서 첫번째 딕셔너리의 k값으로 리스트 안에 있는 딕셔너리의 값들을 중복없이 가져온다.
+    def extract_param(self,lst):
+        rst = {
+            k: list(dict.fromkeys((d[k] for d in lst)))
+            for k in lst[0]
+        }
+        return rst
 
 
 if __name__ =='__main__':
