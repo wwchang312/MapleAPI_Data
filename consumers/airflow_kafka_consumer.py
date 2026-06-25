@@ -14,7 +14,7 @@ class AirflowKafkaConsumer(BaseConsumer):
             'bootstrap.servers': self.BOOTSTRAP_SERVERS,
             'group.id': self.group_id,
             'auto.offset.reset': 'earliest',
-            'enable.auto.commit': 'true'
+            'enable.auto.commit': 'false'
         }
 
         self.consumer = Consumer(conf)
@@ -54,6 +54,8 @@ class AirflowKafkaConsumer(BaseConsumer):
             k: list(dict.fromkeys((d[k] for d in lst)))
             for k in lst[0]
         }
+
+        self.logger.info(f"추출된 파라미터: {rst}")
         return rst
 
 
