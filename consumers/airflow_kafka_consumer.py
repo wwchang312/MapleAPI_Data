@@ -36,7 +36,7 @@ class AirflowKafkaConsumer(BaseConsumer):
                 #kafka 메시징 큐로부터, 파라미터 추출
                 self.logger.info(f'파라미터 추출 시작')
                 msg_param_lst = [json.loads(msg.value().decode('utf-8')) for msg in msg_lst]
-                self.extract_param(msg_param_lst) #Param을 각 key의 value를 List 타입으로 바꾸는 함수
+                self.logger.info(msg_param_lst)
 
         except KafkaException:
             self.logger.exception("Kafka exception occurred during message consumption")
@@ -47,16 +47,6 @@ class AirflowKafkaConsumer(BaseConsumer):
         finally:
             self.consumer.close()
             self.logger.info("Consumer closed.")
-
-    #파라미터로 입력받은 값이 들어오기 때문에 형태가 고정된다. 따라서 첫번째 딕셔너리의 k값으로 리스트 안에 있는 딕셔너리의 값들을 중복없이 가져온다.
-    def extract_param(self,lst):
-        rst = {
-            k: list(dict.fromkeys((d[k] for d in lst)))
-            for k in lst[0]
-        }
-
-        self.logger.info(f"추출된 파라미터: {rst}")
-        return rst
 
 
 if __name__ =='__main__':
