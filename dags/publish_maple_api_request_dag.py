@@ -57,7 +57,11 @@ with DAG(
 
         #데이터셋 미지정시 None으로 값 처리
         data_nm_lst = context.get('params').get('data_nm').split(',') if context.get('params').get('data_nm') else None
-        # data_nm_builder=ChangeParma(data_nm_lst,'character_info_dataset') #array -> string으로 변경에따른 미사용
+        if data_nm_lst is None: #value가 None일때, 전체 API 리스트를 할당
+            data_nm_builder=ChangeParma(data_nm_lst,'character_info_dataset')
+            data_nm_lst=data_nm_builder.mapping_array_alias()
+
+        # data_nm_builder=ChangeParma(data_nm_lst,'character_info_dataset') array-> string 변경에 따른 미사용
         # data_nm_param_lst=data_nm_builder.mapping_array_alias()
 
         #입력받은 날짜 계산 및 파라미터 생성
