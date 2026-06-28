@@ -4,7 +4,7 @@ import pendulum
 
 with DAG(
         dag_id='collect_maple_user_achievement_dag',
-        schedule='0 0 * * 4',  # 매주 목요일 수행
+        schedule='0 0 * * *',  # 매주 정각 수행
         start_date=pendulum.datetime(2025, 8, 1, tz="Asia/Seoul"),
         tags=['Maple', 'User Achievement'],
         description="메이플스토리 업적 정보",
