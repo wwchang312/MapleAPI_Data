@@ -34,12 +34,12 @@ class MapleApiOperator(BaseOperator):
             aws_secret_access_key=Variable.get("minio-secret-key")
         )
 
-        today=datetime.today().strftime('%Y-%m-%d')
+        logical_date=context['logical_date'].strftime("%Y%m%d")
 
         # MinIO 저장
         s3.put_object(
             Bucket="maple-character-api",
-            Key=f"{self.data_nm}/{today}/data.json",
+            Key=f"{self.data_nm}/{logical_date}/data.json",
             Body=data,
             ContentType="application/json"
         )
