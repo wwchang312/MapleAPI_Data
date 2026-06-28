@@ -6,7 +6,7 @@ import boto3
 
 
 class MapleApiOperator(BaseOperator):
-    template_fields = 'data_nm'
+    template_fields = ['data_nm']
 
     def __init__(self, data_nm, **kwargs):
         """
@@ -72,5 +72,5 @@ class MapleApiOperator(BaseOperator):
             empty_list = contents
 
         json_str = json.dumps(empty_list, ensure_ascii=False).encode('utf-8')
-        json_str = json_str.replace("'", "''")  # 일부 값이 '가 들어있어 dumping 과정에서 문자열이 손상되는 경우가 있어 이를 대비하기 위해 추가
+
         return json_str
