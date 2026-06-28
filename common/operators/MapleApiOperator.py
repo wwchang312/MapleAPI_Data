@@ -29,7 +29,7 @@ class MapleApiOperator(BaseOperator):
         #minio 연결
         s3= boto3.client(
             "s3",
-            endpoint_url="https://localhost:9000",
+            endpoint_url="https://localhost:9001",
             aws_access_key_id=Variable.get("minio-access-key"),
             aws_secret_access_key=Variable.get("minio-secret-key")
         )
