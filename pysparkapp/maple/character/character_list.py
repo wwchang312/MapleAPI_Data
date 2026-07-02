@@ -23,6 +23,8 @@ raw_df = spark.read.json("s3a://maple-character-api/character/list/20260629/data
 
 raw_df.persist()
 
+raw_df.show(truncate=False)
+
 result = raw_df.select(
         "account_id",
         explode("character_list").alias("character")
@@ -30,5 +32,5 @@ result = raw_df.select(
 
 raw_df.unpersist()
 
-print(result)
+result.show(truncate=False)
 
