@@ -1,8 +1,6 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import explode
-from pyspark.sql.types import  IntegerType,StringType,StructType,StructField,ArrayType
 import os
-import logging
 
 s3_access_key = os.environ['S3_ACCESS_KEY']
 s3_secret_key = os.environ['S3_SECRET_KEY']
