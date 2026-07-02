@@ -17,7 +17,7 @@ spark = (
     .getOrCreate()
 )
 
-raw_df = spark.read.json("s3a://maple-character-api/character/list/20260629/data.json")
+raw_df = spark.read.json("s3a://maple-character-api/character/list/20260701_data.json")
 
 raw_df.persist()
 
