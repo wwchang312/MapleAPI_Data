@@ -4,8 +4,8 @@ import os
 
 s3_access_key = os.environ['S3_ACCESS_KEY']
 s3_secret_key = os.environ['S3_SECRET_KEY']
-user = os.environ['MSSQL_USER']
-password = os.environ['MSSQL_PASSWORD']
+usr = os.environ['MSSQL_USER']
+pwd = os.environ['MSSQL_PASSWORD']
 
 spark = (
     SparkSession.builder
@@ -38,8 +38,8 @@ result.write \
     .format("jdbc") \
     .option("url", "jdbc:sqlserver://host.docker.internal:1433;databaseName=nexon;encrypt=true;trustServerCertificate=true") \
     .option("dbtable", "character_list") \
-    .option("user", user) \
-    .option("password", password) \
+    .option("user", usr) \
+    .option("password", pwd) \
     .option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver") \
     .mode("append") \
     .save()
