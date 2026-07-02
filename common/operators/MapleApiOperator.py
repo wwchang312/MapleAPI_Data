@@ -49,7 +49,7 @@ class MapleApiOperator(BaseOperator):
         sql = """
         INSERT INTO dbo.pipeline_meta
         (uuid,data_name,target_date,target_path,status,msg,update_date)
-        VALUES (%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP)
+        VALUES (?,?,?,?,?,?,CURRENT_TIMESTAMP)
         """
         data_path=self.data_nm.replace("_","/") #Minio 경로 문제로 _ -> /로 변경
 
