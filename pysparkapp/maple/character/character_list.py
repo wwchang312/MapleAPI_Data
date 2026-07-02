@@ -21,7 +21,7 @@ raw_df = spark.read.json("s3a://maple-character-api/character/list/20260629/data
 
 raw_df.persist()
 
-raw_df.show(truncate=False)
+# raw_df.show(truncate=False)
 
 result = raw_df.select(
         "account_id",
@@ -30,5 +30,12 @@ result = raw_df.select(
 
 raw_df.unpersist()
 
-result.show(truncate=False)
-
+result.write \
+    .format("jdbc") \
+    .option("url", "jdbc:sqlserver://host.docker.internal:1433;databaseName=nexon;encrypt=true;trustServerCertificate=true") \
+    .option("dbtable", "character_list") \
+    .option("user", "user") \
+    .option("password", "password") \
+    .option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver") \
+    .mode("append") \
+    .save()
