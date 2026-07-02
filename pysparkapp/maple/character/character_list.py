@@ -32,12 +32,12 @@ raw_df.unpersist()
 
 result.show()
 
-# result.write \
-#     .format("jdbc") \
-#     .option("url", "jdbc:sqlserver://host.docker.internal:1433;databaseName=nexon;encrypt=true;trustServerCertificate=true") \
-#     .option("dbtable", "character_list") \
-#     .option("user", "user") \
-#     .option("password", "password") \
-#     .option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver") \
-#     .mode("append") \
-#     .save()
+result.write \
+    .format("jdbc") \
+    .option("url", "jdbc:sqlserver://host.docker.internal:1433;databaseName=nexon;encrypt=true;trustServerCertificate=true") \
+    .option("dbtable", "character_list") \
+    .option("user", "user") \
+    .option("password", "password") \
+    .option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver") \
+    .mode("append") \
+    .save()
