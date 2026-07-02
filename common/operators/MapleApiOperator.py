@@ -59,7 +59,7 @@ class MapleApiOperator(BaseOperator):
                 str(uuid.uuid4()),
                 self.data_nm,
                 logical_date,
-                f"maple-character-api/{data_path}/{logical_date}/data.json",
+                f"maple-character-api/{data_path}/{logical_date}_data.json",
                 "READY",
                 "",
             )
