@@ -18,15 +18,14 @@ schema= StructType(
 spark = (
     SparkSession.builder
     .appName("Character_list_to_DB")
+    .config("spark.hadoop.fs.s3a.endpoint","http://minio:9000")
+    .config("spark.hadoop.fs.s3a.access.key",s3_access_key)
+    .config("spark.hadoop.fs.s3a.secret.key",s3_secret_key)
+    .config('spark.hadoop.fs.s3a.path.style.access',"true")
+    .config("spark.hadoop.fs.s3a.connection.ssl.enabled", "false")
+    .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
     .getOrCreate()
 )
-
-spark.conf.set("spark.hadoop.fs.s3a.endpoint","http://minio:9000")
-spark.conf.set("spark.hadoop.fs.s3a.access_key",s3_access_key),
-spark.conf.set("spark.hadoop.fs.s3a.secret_key",s3_secret_key),
-spark.conf.set('spark.hadoop.fs.s3a.path.style.access',"true")
-spark.conf.set("spark.hadoop.fs.s3a.connection.ssl.enabled", "false")
-spark.conf.set("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
 
 raw_df = spark.read.json("s3a://maple-character-api/character/list/20260629/data.json")
 
