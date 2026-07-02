@@ -25,8 +25,8 @@ raw_df.persist()
 
 result = raw_df.select(
         "account_id",
-        explode("character_list")
-).select("account_id", "character_list.*")
+        explode("character_list").alias("character")
+).select("account_id", "character.*")
 
 raw_df.unpersist()
 
