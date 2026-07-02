@@ -1,8 +1,9 @@
 from airflow.sdk.bases.operator import BaseOperator
 from airflow.sdk import Variable
-from datetime import datetime
+from airflow.providers.odbc.hooks.odbc import OdbcHook
 import json
 import boto3
+import uuid
 
 
 class MapleApiOperator(BaseOperator):
@@ -44,6 +45,25 @@ class MapleApiOperator(BaseOperator):
             ContentType="application/json"
         )
 
+        hook =OdbcHook(odbc_conn_id="maple-rdbms-mssql",driver="ODBC Driver 18 for SQL Server")
+        sql = """
+        INSERT INTO dbo.pipeline_meta
+        (uuid,data_name,target_date,target_path,status,msg,update_date)
+        VALUES (%s,%s,%s,%s,%s,%s,CURRENT_TIMESTAMP)
+        """
+        data_path=self.data_nm.replace("_","/") #Minio 경로 문제로 _ -> /로 변경
+
+        hook.run(
+            sql,
+            parameters=(
+                str(uuid.uuid4()),
+                self.data_nm,
+                logical_date,
+                f"maple-character-api/{data_path}/{logical_date}/data.json",
+                "READY",
+                "",
+            )
+        )
 
     def _call_api(self, base_url, data_nm, headers):
         import requests
