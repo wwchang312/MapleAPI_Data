@@ -40,7 +40,7 @@ class MapleApiOperator(BaseOperator):
         # MinIO 저장
         s3.put_object(
             Bucket="maple-character-api",
-            Key=f"{self.data_nm}/{logical_date}/data.json",
+            Key=f"{self.data_nm}/{logical_date}_data.json",
             Body=data,
             ContentType="application/json"
         )
