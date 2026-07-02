@@ -30,12 +30,14 @@ result = raw_df.select(
 
 raw_df.unpersist()
 
-result.write \
-    .format("jdbc") \
-    .option("url", "jdbc:sqlserver://host.docker.internal:1433;databaseName=nexon;encrypt=true;trustServerCertificate=true") \
-    .option("dbtable", "character_list") \
-    .option("user", "user") \
-    .option("password", "password") \
-    .option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver") \
-    .mode("append") \
-    .save()
+result.show()
+
+# result.write \
+#     .format("jdbc") \
+#     .option("url", "jdbc:sqlserver://host.docker.internal:1433;databaseName=nexon;encrypt=true;trustServerCertificate=true") \
+#     .option("dbtable", "character_list") \
+#     .option("user", "user") \
+#     .option("password", "password") \
+#     .option("driver", "com.microsoft.sqlserver.jdbc.SQLServerDriver") \
+#     .mode("append") \
+#     .save()
