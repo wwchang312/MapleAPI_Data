@@ -4,6 +4,9 @@ from airflow.providers.odbc.hooks.odbc import OdbcHook
 import json
 import boto3
 import uuid
+import logging
+
+logger=logging.getLogger(__name__)
 
 
 class MapleApiOperator(BaseOperator):
@@ -24,46 +27,70 @@ class MapleApiOperator(BaseOperator):
 
     def execute(self, context):
 
-        con = self._call_api(self.base_url, self.data_nm, self.headers)
-        data = self.json_dumping(con)
+        #조회 기준 날짜
+        logical_date = context['logical_date'].strftime("%Y%m%d")
 
-        #minio 연결
-        s3= boto3.client(
-            "s3",
-            endpoint_url="http://minio:9000",
-            aws_access_key_id=Variable.get("minio-access-key"),
-            aws_secret_access_key=Variable.get("minio-secret-key")
+        hook = OdbcHook(
+            odbc_conn_id="maple-rdbms-mssql",
+            driver="ODBC Driver 18 for SQL Server"
         )
 
-        logical_date=context['logical_date'].strftime("%Y%m%d")
-
-        # MinIO 저장
-        s3.put_object(
-            Bucket="maple-character-api",
-            Key=f"{self.data_nm}/{logical_date}_data.json",
-            Body=data,
-            ContentType="application/json"
-        )
-
-        hook =OdbcHook(odbc_conn_id="maple-rdbms-mssql",driver="ODBC Driver 18 for SQL Server")
         sql = """
-        INSERT INTO dbo.pipeline_meta
-        (uuid,data_name,target_date,target_path,status,msg,update_date)
-        VALUES (?,?,?,?,?,?,CURRENT_TIMESTAMP)
-        """
-        data_path=self.data_nm.replace("_","/") #Minio 경로 문제로 _ -> /로 변경
+                INSERT INTO dbo.pipeline_meta
+                (uuid,data_name,target_date,target_path,status,msg,update_date)
+                VALUES (?,?,?,?,?,?,CURRENT_TIMESTAMP)
+                """
+        data_path = self.data_nm.replace("_", "/")  # Minio 경로 문제로 _ -> /로 변경
 
-        hook.run(
-            sql,
-            parameters=(
-                str(uuid.uuid4()),
-                self.data_nm,
-                logical_date,
-                f"maple-character-api/{data_path}/{logical_date}_data.json",
-                "READY",
-                "",
+        try:
+            con = self._call_api(self.base_url, self.data_nm, self.headers)
+            data = self.json_dumping(con)
+
+            #MinIO 연결
+            s3= boto3.client(
+                "s3",
+                endpoint_url="http://minio:9000",
+                aws_access_key_id=Variable.get("minio-access-key"),
+                aws_secret_access_key=Variable.get("minio-secret-key")
             )
-        )
+
+            # MinIO 저장
+            s3.put_object(
+                Bucket="maple-character-api",
+                Key=f"{self.data_nm}/{logical_date}_data.json",
+                Body=data,
+                ContentType="application/json"
+            )
+
+            hook.run(
+                sql,
+                parameters=(
+                    str(uuid.uuid4()),
+                    self.data_nm,
+                    logical_date,
+                    f"maple-character-api/{data_path}/{logical_date}_data.json",
+                    "READY",
+                    "",
+                )
+            )
+
+        except Exception as e:
+            err_msg = str(e)
+
+            logger.exception(f"[{self.data_nm}] 오류발생]")
+
+            hook.run(
+                sql,
+                parameters=(
+                    str(uuid.uuid4()),
+                    self.data_nm,
+                    logical_date,
+                    f"maple-character-api/{data_path}/{logical_date}_data.json",
+                    "FAIL",
+                    err_msg[:2000],
+                )
+            )
+
 
     def _call_api(self, base_url, data_nm, headers):
         import requests
