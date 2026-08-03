@@ -25,7 +25,7 @@ with DAG(
         timeout= 600,
         mode='reschedule',
         hook_params={
-            "ODBC Driver 18 for SQL Server"
+            "driver" : "ODBC Driver 18 for SQL Server"
         },
     )
 
