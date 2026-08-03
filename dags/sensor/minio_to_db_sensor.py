@@ -51,9 +51,10 @@ with DAG(
 
         return [
             {
-                "data_name" : rows[0],
-                "target_path" : rows[1]
+                "data_name" : row[0],
+                "target_path" : row[1]
             }
+            for row in rows
         ]
 
 
