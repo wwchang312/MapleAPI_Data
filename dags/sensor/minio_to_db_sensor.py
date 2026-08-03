@@ -1,8 +1,10 @@
 from airflow.providers.odbc.hooks.odbc import OdbcHook
-from airflow.sdk import DAG
+from airflow.sdk import DAG,task
 from airflow.providers.common.sql.sensors.sql import SqlSensor
-from airflow.providers.standard.operators.empty import EmptyOperator
 import pendulum
+
+
+conn_id ='maple-rdbms-mssql'
 
 with DAG(
     dag_id='minio_to_db_sensor',
@@ -14,7 +16,7 @@ with DAG(
 
     watcher = SqlSensor(
         task_id='pipeline_meta_watcher',
-        conn_id='maple-rdbms-mssql',
+        conn_id=conn_id,
         sql = """
             SELECT COUNT(*)
             FROM dbo.pipeline_meta
@@ -29,8 +31,32 @@ with DAG(
         },
     )
 
-    test_task = EmptyOperator(
-        task_id='test_task',
-    )
+    @task
+    def spark_parameter():
+        hook = OdbcHook(
+            odbc_conn_id=conn_id,
+            driver="ODBC Driver 18 for SQL Server",
+        )
 
-    watcher >> test_task
+        rows = hook.get_records(
+            sql= """
+                SELECT 
+                    data_name,
+                    target_path
+                FROM dbo.pipeline_meta
+                WHERE status = ?
+            """,
+            parameters= ("READY",),
+        )
+
+        return [
+            {
+                "data_name" : rows[0].replace('/','_')
+                "target_path" : rows[1]
+            }
+        ]
+
+
+    spark_parameter=spark_parameter()
+
+    watcher >> spark_parameter
