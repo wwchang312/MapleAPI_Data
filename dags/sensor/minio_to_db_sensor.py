@@ -18,9 +18,9 @@ with DAG(
         sql = """
             SELECT COUNT(*)
             FROM dbo.pipeline_meta
-            WHERE status = %(status)
+            WHERE status = ?
         """,
-        params={'status':"READY"},
+        parameters= ("READY",),
         poke_interval=60,
         timeout= 600,
         mode='reschedule',
