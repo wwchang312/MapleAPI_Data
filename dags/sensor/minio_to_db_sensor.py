@@ -1,3 +1,4 @@
+from airflow.providers.odbc.hooks.odbc import OdbcHook
 from airflow.sdk import DAG
 from airflow.providers.common.sql.sensors.sql import SqlSensor
 from airflow.providers.standard.operators.empty import EmptyOperator
@@ -23,6 +24,9 @@ with DAG(
         poke_interval=60,
         timeout= 600,
         mode='reschedule',
+        hook_params={
+            "ODBC Driver 18 for SQL Server"
+        },
     )
 
     test_task = EmptyOperator(
