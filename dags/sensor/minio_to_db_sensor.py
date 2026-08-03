@@ -51,7 +51,7 @@ with DAG(
 
         return [
             {
-                "data_name" : rows[0].replace('/','_'),
+                "data_name" : rows[0],
                 "target_path" : rows[1]
             }
         ]
