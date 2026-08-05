@@ -1,6 +1,7 @@
 from airflow.providers.odbc.hooks.odbc import OdbcHook
 from airflow.sdk import DAG,task
 from airflow.providers.common.sql.sensors.sql import SqlSensor
+from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 import pendulum
 
 
@@ -14,6 +15,7 @@ with DAG(
     tags=['sensor','pipeline_meta'],
 ) as dag:
 
+    #Sensor를 통한 pipeline_meta 테이블 감시
     watcher = SqlSensor(
         task_id='pipeline_meta_watcher',
         conn_id=conn_id,
@@ -31,6 +33,7 @@ with DAG(
         },
     )
 
+    #메타 테이블로부터 적재 대상 데이터 식별
     @task
     def spark_parameter():
         hook = OdbcHook(
@@ -41,8 +44,7 @@ with DAG(
         rows = hook.get_records(
             sql= """
                 SELECT 
-                    data_name,
-                    target_path
+                    uuid
                 FROM dbo.pipeline_meta
                 WHERE status = ?
             """,
@@ -50,13 +52,20 @@ with DAG(
         )
 
         return [
-            {
-                "data_name" : row[0],
-                "target_path" : row[1]
-            }
+            ["--pipeline-id",str(row[0])]
             for row in rows
         ]
 
+    pipeline_id = spark_parameter()
+
+    #Spark job 제출
+    submit_spark_jobs = SparkSubmitOperator().partial(
+        task_id='pipeline_submit_spark_jobs',
+        conn_id="spark-conn-id",
+        application="pysparkapp/maple/character/stg_data.py",
+    ).expand(
+        application_args=pipeline_id,
+    )
 
     spark_parameter=spark_parameter()
 
