@@ -59,7 +59,7 @@ with DAG(
     pipeline_id = spark_parameter()
 
     #Spark job 제출
-    submit_spark_jobs = SparkSubmitOperator().partial(
+    submit_spark_jobs = SparkSubmitOperator.partial(
         task_id='pipeline_submit_spark_jobs',
         conn_id="spark-conn-id",
         application="pysparkapp/maple/character/stg_data.py",
