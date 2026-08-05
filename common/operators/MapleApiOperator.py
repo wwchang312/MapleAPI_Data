@@ -18,12 +18,12 @@ class MapleApiOperator(BaseOperator):
         예시: 캐릭터 목록 조회 api 호출시,
         data_nm = "character/list"
         """
-        super().__init__(**kwargs)
         self.base_url = 'https://open.api.nexon.com/maplestory/v1/'
         self.data_nm = data_nm
         self.headers = {"x-nxopen-api-key": Variable.get("x-nxopen-api-key")}
 
 
+        super().__init__(**kwargs)
 
     def execute(self, context):
 
@@ -37,7 +37,7 @@ class MapleApiOperator(BaseOperator):
 
         sql = """
                 INSERT INTO dbo.pipeline_meta
-                (uuid,data_name,target_date,target_path,status,msg,update_date)
+                (uuid,data_name,date_info,source_path,status,msg,update_date)
                 VALUES (?,?,?,?,?,?,CURRENT_TIMESTAMP)
                 """
         data_path = self.data_nm.replace("_", "/")  # Minio 경로 문제로 _ -> /로 변경
