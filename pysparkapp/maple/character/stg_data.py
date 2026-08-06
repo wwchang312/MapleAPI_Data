@@ -45,7 +45,7 @@ def read_pipeline_meta(
             date_info,
             source_path
         FROM dbo.pipeline_meta
-        WHERE uuid = {pipeline_id}
+        WHERE uuid = '{pipeline_id}'
     """
 
     meta_df = (
@@ -63,7 +63,7 @@ def read_pipeline_meta(
 
     if row is None:
         raise ValueError(
-            f"pipeline_id = {pipeline_id}에 해당하는 메타정보가 없습니다."
+            f"pipeline_id = '{pipeline_id}'에 해당하는 메타정보가 없습니다."
         )
 
     return row
@@ -127,9 +127,9 @@ def change_meta_status(
         cursor.execute(
             """
             UPDATE dbo.pipeline_meta
-            SET status = ?,
+            SET status = '?',
                 updated_at = GETDATE()
-            WHERE pipeline_id = ?
+            WHERE pipeline_id ='?'
             """,
             status,
             pipeline_id,
