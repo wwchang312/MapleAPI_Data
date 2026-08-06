@@ -63,6 +63,7 @@ with DAG(
         task_id='pipeline_submit_spark_jobs',
         conn_id="spark-conn-id",
         application="pysparkapp/maple/character/stg_data.py",
+        jars="/opt/spark/jars/mssql-jdbc-12.6.1.jre11.jar",
         conf={
             "spark.yarn.appMasterEnv.S3_ACCESS_KEY": os.environ["S3_ACCESS_KEY"],
             "spark.yarn.appMasterEnv.S3_SECRET_KEY": os.environ["S3_SECRET_KEY"],
