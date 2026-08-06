@@ -63,7 +63,9 @@ with DAG(
         task_id='pipeline_submit_spark_jobs',
         conn_id="spark-conn-id",
         application="pysparkapp/maple/character/stg_data.py",
-        yarn_track_via_rm_api=True,
+        yarn_track_via_rm_api=False,
+        durable=False,
+        verbose=True,
     ).expand(
         application_args=pipeline_id,
     )
