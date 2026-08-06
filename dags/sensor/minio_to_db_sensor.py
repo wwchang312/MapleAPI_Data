@@ -65,6 +65,8 @@ with DAG(
         application="pysparkapp/maple/character/stg_data.py",
         jars="/opt/spark/jars/mssql-jdbc-12.6.1.jre11.jar",
         conf={
+            "spark.yarn.appMasterEnv.PYSPARK_PYTHON": "/src/spark_venv/bin/python",
+            "spark.executorEnv.PYSPARK_PYTHON": "/src/spark_venv/bin/python",
             "spark.yarn.appMasterEnv.S3_ACCESS_KEY": os.environ["S3_ACCESS_KEY"],
             "spark.yarn.appMasterEnv.S3_SECRET_KEY": os.environ["S3_SECRET_KEY"],
             "spark.yarn.appMasterEnv.DB_URL": os.environ["DB_URL"],
