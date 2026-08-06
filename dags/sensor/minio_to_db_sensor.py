@@ -3,7 +3,7 @@ from airflow.sdk import DAG,task
 from airflow.providers.common.sql.sensors.sql import SqlSensor
 from airflow.providers.apache.spark.operators.spark_submit import SparkSubmitOperator
 import pendulum
-
+import os
 
 conn_id ='maple-rdbms-mssql'
 
@@ -63,6 +63,12 @@ with DAG(
         task_id='pipeline_submit_spark_jobs',
         conn_id="spark-conn-id",
         application="pysparkapp/maple/character/stg_data.py",
+        conf={
+            "spark.yarn.appMasterEnv.S3_ACCESS_KEY": os.environ["S3_ACCESS_KEY"],
+            "spark.yarn.appMasterEnv.S3_SECRET_KEY": os.environ["S3_SECRET_KEY"],
+            "spark.executorEnv.S3_ACCESS_KEY": os.environ["S3_ACCESS_KEY"],
+            "spark.executorEnv.S3_SECRET_KEY": os.environ["S3_SECRET_KEY"],
+        },
         yarn_track_via_rm_api=False,
         reconnect_on_retry=False,
         verbose=True,
