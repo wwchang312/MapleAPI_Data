@@ -66,7 +66,3 @@ with DAG(
     ).expand(
         application_args=pipeline_id,
     )
-
-    spark_parameter=spark_parameter()
-
-    watcher >> spark_parameter
