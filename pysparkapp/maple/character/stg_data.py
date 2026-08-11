@@ -1,6 +1,5 @@
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import explode
-from airflow.sdk import Variable
 import os
 import argparse
 import pyodbc
