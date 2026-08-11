@@ -131,7 +131,7 @@ def change_meta_status(
             UPDATE dbo.pipeline_meta
             SET status = ?,
                 updated_at = GETDATE()
-            WHERE pipeline_id =?
+            WHERE uuid =?
             """,
             status,
             pipeline_id,
