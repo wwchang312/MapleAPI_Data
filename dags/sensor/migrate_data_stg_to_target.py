@@ -31,9 +31,9 @@ with DAG(
         },
     )
 
-    @task
-    def call_load_staging_data():
 
+    @task
+    def processing_staging_data():
         hook = OdbcHook(
             odbc_conn_id=conn_id,
             driver="ODBC Driver 18 for SQL Server",
@@ -41,7 +41,43 @@ with DAG(
         )
 
         sql = """
-            EXEC SP_LOAD_STAGING_DATA
-            """
+            UPDATE TOP (1) dbo.pipeline_meta
+            SET
+                status = 'PROCESSING',
+                update_date = GETDATE()
+            OUTPUT
+                inserted.uuid
+            WHERE status = 'STAGING';
+        """
 
-        hook.run(sql=sql)
+        row = hook.get_first(sql)
+
+        if row is None:
+            raise ValueError("처리할 STAGING 데이터가 없습니다.")
+
+        return str(row[0])
+
+
+    @task
+    def load_staging_data(uuid: str):
+        hook = OdbcHook(
+            odbc_conn_id=conn_id,
+            driver="ODBC Driver 18 for SQL Server",
+            database="nexon",
+        )
+
+        sql = """
+            EXEC dbo.SP_LOAD_STAGING_DATA
+                @uuid = ?;
+        """
+
+        hook.run(
+            sql=sql,
+            parameters=(uuid,),
+        )
+
+
+    processing_uuid  = processing_staging_data()
+    load_staging_data = load_staging_data(processing_uuid)
+
+    watcher  >>  processing_uuid
