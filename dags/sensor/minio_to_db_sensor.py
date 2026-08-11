@@ -65,7 +65,7 @@ with DAG(
         application="pysparkapp/maple/character/stg_data.py",
         conf={
             "spark.executor.memory": "1g",
-            "spark.executor.cores": "1",
+            "spark.executor.cores": "2",
         },
     ).expand(
         application_args=pipeline_id,
