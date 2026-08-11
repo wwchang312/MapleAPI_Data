@@ -23,12 +23,6 @@ def create_spark_session() -> SparkSession:
     return(
         SparkSession.builder
         .appName("json_loader")
-        .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000")
-        .config("spark.hadoop.fs.s3a.access.key", s3_access_key)
-        .config("spark.hadoop.fs.s3a.secret.key", s3_secret_key)
-        .config('spark.hadoop.fs.s3a.path.style.access', "true")
-        .config("spark.hadoop.fs.s3a.connection.ssl.enabled", "false")
-        .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
         .getOrCreate()
     )
 
