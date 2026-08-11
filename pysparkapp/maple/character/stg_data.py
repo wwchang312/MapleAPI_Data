@@ -113,7 +113,7 @@ def change_meta_status(
         ):
     connections_info = (
         "DRIVER={ODBC Driver 18 for SQL Server};"
-        "SERVER=mssql,1433;"
+        "SERVER=host.docker.internal,1433;"
         "DATABASE=pipeline_db;"
         f"UID={db_usr};"
         f"PWD={{db_pwd}};"
