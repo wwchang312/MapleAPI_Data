@@ -116,7 +116,7 @@ def change_meta_status(
         "SERVER=host.docker.internal,1433;"
         "DATABASE=pipeline_db;"
         f"UID={db_usr};"
-        f"PWD={{db_pwd}};"
+        f"PWD={db_pwd};"
         "Encrypt=yes;"
         "TrustServerCertificate=yes;"
     )
