@@ -75,7 +75,7 @@ def read_pipeline_meta(
 def read_json(spark: SparkSession, source_path: str):
     return spark.read.json(f's3a://{source_path}')
 
-
+#data 이름에 따른 파싱
 def parsing_json(df : DataFrame, data_nm:str):
 
     if data_nm == "character_list":
@@ -84,6 +84,14 @@ def parsing_json(df : DataFrame, data_nm:str):
                 "account_id",
                 explode("character_list").alias("character")
             ).select("account_id","character.*")
+        )
+
+    elif data_nm == "user_achievement":
+        raw_data=(
+            df.select(
+                "account_id",
+                explode("achievement_achieve").alias("achievement")
+            ).select("account_id","achievement.*")
         )
 
     else :
