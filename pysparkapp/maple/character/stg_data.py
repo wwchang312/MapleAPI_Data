@@ -5,8 +5,8 @@ import os
 import argparse
 import pyodbc
 
-s3_access_key = Variable.get("minio-access-key")
-s3_secret_key = Variable.get("minio-secret-key")
+s3_access_key = os.environ['S3_ACCESS_KEY']
+s3_secret_key = os.environ['S3_SECRET_KEY']
 db_url= os.environ['DB_URL']
 db_usr = os.environ['MSSQL_USER']
 db_pwd = os.environ['MSSQL_PASSWORD']
