@@ -1,11 +1,12 @@
 from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql.functions import explode
+from airflow.sdk import Variable
 import os
 import argparse
 import pyodbc
 
-s3_access_key = os.environ['S3_ACCESS_KEY']
-s3_secret_key = os.environ['S3_SECRET_KEY']
+s3_access_key = Variable.get("minio-access-key")
+s3_secret_key = Variable.get("minio-secret-key")
 db_url= os.environ['DB_URL']
 db_usr = os.environ['MSSQL_USER']
 db_pwd = os.environ['MSSQL_PASSWORD']
@@ -24,8 +25,8 @@ def create_spark_session() -> SparkSession:
         SparkSession.builder
         .appName("json_loader")
         .config("spark.hadoop.fs.s3a.endpoint", "http://minio:9000")
-        .config("spark.hadoop.fs.s3a.access.key", "S3_ACCESS_KEY")
-        .config("spark.hadoop.fs.s3a.secret.key", "S3_SECRET_KEY")
+        .config("spark.hadoop.fs.s3a.access.key", s3_access_key)
+        .config("spark.hadoop.fs.s3a.secret.key", s3_secret_key)
         .config("spark.hadoop.fs.s3a.path.style.access", "true")
         .config(
             "spark.hadoop.fs.s3a.aws.credentials.provider",
