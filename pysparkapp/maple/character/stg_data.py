@@ -129,9 +129,9 @@ def change_meta_status(
         cursor.execute(
             """
             UPDATE dbo.pipeline_meta
-            SET status = '?',
+            SET status = ?,
                 updated_at = GETDATE()
-            WHERE pipeline_id ='?'
+            WHERE pipeline_id =?
             """,
             status,
             pipeline_id,
