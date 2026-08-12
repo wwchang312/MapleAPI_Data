@@ -67,7 +67,7 @@ with DAG(
         )
 
         sql = """
-            EXEC dbo.SP_LOAD_STAGING_DATA
+            EXEC maple.SP_LOAD_STAGING_DATA
                 @uuid = ?;
         """
 
@@ -78,6 +78,6 @@ with DAG(
 
 
     processing_uuid  = processing_staging_data()
-    load_staging_data = load_staging_data(processing_uuid)
+    load_task = load_staging_data(processing_uuid)
 
-    watcher  >>  processing_uuid
+    watcher  >>  processing_uuid >> load_task
