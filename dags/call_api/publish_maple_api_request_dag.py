@@ -79,6 +79,9 @@ with DAG(
 
         return msg
 
+    rst=publish_message()
+    print(rst)
+
     mp_character_param_producer=ProduceToTopicOperator(
         task_id='mp_character_param_producer',
         kafka_config_id='kafka_conn_id',
