@@ -5,8 +5,6 @@ from datetime import date
 from common.utils.date_param import DateParamBuild
 from common.utils.change_param import ChangeParma
 from itertools import product
-import json
-import uuid
 import pendulum
 
 
@@ -24,14 +22,12 @@ with DAG(
                 description= "캐릭터 이름 입력"
             ),
             "from_date" : Param(
-                date.today().strftime("%Y-%m-%d"),
                 type = ["null","string"],
                 format = "date",
                 title = "조회 시작일",
                 description= "조회 기준일 시작일자"
             ),
             "to_date" : Param(
-                date.today().strftime("%Y-%m-%d"),
                 type = ["null","string"],
                 format = "date",
                 title = "조회 종료일",
@@ -44,8 +40,6 @@ with DAG(
                 )
         }
 ) as dag:
-
-    BROKER_LIST = 'broker01:9092,broker02:9092,broker03:9092'
 
     @task
     def publish_message(**context):
@@ -61,8 +55,17 @@ with DAG(
             data_nm_lst=data_nm_builder.mapping_array_alias()
 
         #입력받은 날짜 계산 및 파라미터 생성
-        from_date = context.get('params').get('from_date')
-        to_date = context.get('params').get('to_date')
+        from_date = context.get('params',{}).get('from_date')
+        to_date = context.get('params',{}).get('to_date')
+
+        from_date = from_date or date.today().strftime("%Y-%m-%d")
+        to_date = to_date or date.today().strftime("%Y-%m-%d")
+
+        """
+        airflow 3.3.X 이후 DAG 파싱시점에서 달라지는 값에 대한 인자 관리 엄격해짐
+        따라서 DAG Param에 default로 datetime.today()를 사용하지 않고,
+        DAG 파싱 시점에 to_date와 from_date가 빈값이면 오늘값으로 후속 단계에서 채우는 것으로 변경
+        """
         date_param_builder = DateParamBuild(from_date,to_date)
         date_param_lst=date_param_builder.make_date_list()
 
