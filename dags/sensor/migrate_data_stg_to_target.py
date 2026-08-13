@@ -33,7 +33,7 @@ with DAG(
 
 
     @task
-    def processing_staging_data():
+    def chage_pipeline_status():
         hook = OdbcHook(
             odbc_conn_id=conn_id,
             driver="ODBC Driver 18 for SQL Server",
@@ -48,16 +48,12 @@ with DAG(
             WHERE status = 'STAGING';
         """
 
-        row = hook.get_first(sql)
+        hook.run(sql)
 
-        if row is None:
-            raise ValueError("처리할 STAGING 데이터가 없습니다.")
-
-        return str(row[0])
 
 
     @task
-    def load_staging_data(uuid: str):
+    def load_staging_data():
         hook = OdbcHook(
             odbc_conn_id=conn_id,
             driver="ODBC Driver 18 for SQL Server",
@@ -73,7 +69,7 @@ with DAG(
         )
 
 
-    processing_uuid  = processing_staging_data()
-    load_task = load_staging_data(processing_uuid)
+    chage_status  = chage_pipeline_status()
+    load_task = load_staging_data()
 
-    watcher  >>  processing_uuid >> load_task
+    watcher  >>  chage_status >> load_task
