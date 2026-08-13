@@ -1,6 +1,6 @@
 from airflow.sdk import DAG,Param
 from airflow.decorators import task
-from confluent_kafka import Producer
+from airflow.providers.apache.kafka.operators.produce import ProduceToTopicOperator
 from datetime import date
 from common.utils.date_param import DateParamBuild
 from common.utils.change_param import ChangeParma
@@ -50,7 +50,6 @@ with DAG(
     @task
     def publish_message(**context):
         #실행정보
-        job_id = str(uuid.uuid4())
         run_id = context['run_id']
         #파라미터
         character_name_lst = context.get('params').get('character_name').split(',')   #복수개의 캐릭터 명 입력시 split
@@ -61,45 +60,28 @@ with DAG(
             data_nm_builder=ChangeParma(data_nm_lst,'character_info_dataset')
             data_nm_lst=data_nm_builder.mapping_array_alias()
 
-        # data_nm_builder=ChangeParma(data_nm_lst,'character_info_dataset') array-> string 변경에 따른 미사용
-        # data_nm_param_lst=data_nm_builder.mapping_array_alias()
-
         #입력받은 날짜 계산 및 파라미터 생성
         from_date = context.get('params').get('from_date')
         to_date = context.get('params').get('to_date')
         date_param_builder = DateParamBuild(from_date,to_date)
         date_param_lst=date_param_builder.make_date_list()
 
+        msg = {}
+
         for character_name,date_param,data_nm in product(character_name_lst,date_param_lst,data_nm_lst):
-            msg = {"job_id" : job_id,
-                   "run_id" : run_id,
-                   "character_name" : character_name,
-                   "date" : date_param,
-                   "data_nm" : data_nm
-                   }
+            msg["run_id"]=run_id
+            msg["character_name"] = character_name
+            msg["date"] = date_param
+            msg["data_nm"] = data_nm
 
-            producer = Producer({'bootstrap.servers' : BROKER_LIST})
+        return msg
 
-            def delivery_report(err, message):
-                if err is not None:
-                    raise Exception(f"Message delivery failed: {err}")
-                else:
-                    print(
-                        f"Message delivered to {message.topic()} "
-                        f"[partition={message.partition()}] "
-                        f"offset={message.offset()}"
-                    )
+    mp_character_param_producer=ProduceToTopicOperator(
+        task_id='mp_character_param_producer',
+        kafka_conn_id='kafka_conn_id',
+        topic='maple_character_api_param',
+        producer_function=publish_message
+    )
 
-
-            producer.produce(
-                topic='collect_maple_character_list_dag',
-                value=json.dumps(msg).encode('utf-8'),
-                callback=delivery_report
-            )
-
-            producer.flush(10)
-
-
-    publish_message()
 
 
