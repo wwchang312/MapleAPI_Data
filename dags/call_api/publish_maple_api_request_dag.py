@@ -81,7 +81,7 @@ with DAG(
 
     mp_character_param_producer=ProduceToTopicOperator(
         task_id='mp_character_param_producer',
-        kafka_conn_id='kafka_conn_id',
+        kafka_config_id='kafka_conn_id',
         topic='maple_character_api_param',
         producer_function=publish_message
     )
