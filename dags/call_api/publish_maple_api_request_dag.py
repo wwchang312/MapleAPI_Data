@@ -69,18 +69,13 @@ with DAG(
         date_param_builder = DateParamBuild(from_date,to_date)
         date_param_lst=date_param_builder.make_date_list()
 
-        msg = {}
-
-        for character_name,date_param,data_nm in product(character_name_lst,date_param_lst,data_nm_lst):
-            msg["run_id"]=run_id
-            msg["character_name"] = character_name
-            msg["date"] = date_param
-            msg["data_nm"] = data_nm
-
-        return msg
-
-    rst=publish_message()
-    print(rst)
+        for character_name, date_param, data_nm in product(character_name_lst, date_param_lst, data_nm_lst):
+            yield {
+                   "run_id": run_id,
+                   "character_name": character_name,
+                   "date": date_param,
+                   "data_nm": data_nm
+                   }
 
     mp_character_param_producer=ProduceToTopicOperator(
         task_id='mp_character_param_producer',
