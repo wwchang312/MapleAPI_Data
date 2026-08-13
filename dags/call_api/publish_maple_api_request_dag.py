@@ -6,7 +6,7 @@ from common.utils.date_param import DateParamBuild
 from common.utils.change_param import ChangeParma
 from itertools import product
 import pendulum
-
+import json
 
 with DAG(
         dag_id='publish_maple_api_request_dag',
@@ -42,7 +42,7 @@ with DAG(
 ) as dag:
 
     @task
-    def publish_message(**context):
+    def make_message(**context):
         #실행정보
         run_id = context['run_id']
         #파라미터
@@ -69,19 +69,34 @@ with DAG(
         date_param_builder = DateParamBuild(from_date,to_date)
         date_param_lst=date_param_builder.make_date_list()
 
+        msg=[]
+
         for character_name, date_param, data_nm in product(character_name_lst, date_param_lst, data_nm_lst):
-            yield {
+            msg.append({
                    "run_id": run_id,
                    "character_name": character_name,
                    "date": date_param,
                    "data_nm": data_nm
-                   }
+                   })
+
+        return msg
+
+
+    def publish_message(messages):
+        for msg in messages:
+            yield "character_info", json.dumps(msg)
+
+    message = make_message()
+
+
+
 
     mp_character_param_producer=ProduceToTopicOperator(
         task_id='mp_character_param_producer',
         kafka_config_id='kafka_conn_id',
         topic='maple_character_api_param',
-        producer_function=publish_message
+        producer_function=publish_message,
+        producer_function_args = [message]
     )
 
 
