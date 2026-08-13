@@ -41,12 +41,10 @@ with DAG(
         )
 
         sql = """
-            UPDATE TOP (1) dbo.pipeline_meta
+            UPDATE dbo.pipeline_meta
             SET
                 status = 'PROCESSING',
                 update_date = GETDATE()
-            OUTPUT
-                inserted.uuid
             WHERE status = 'STAGING';
         """
 
@@ -67,13 +65,11 @@ with DAG(
         )
 
         sql = """
-            EXEC maple.SP_LOAD_STAGING_DATA
-                @uuid = ?;
+            EXEC maple.SP_LOAD_STAGING_DATA;
         """
 
         hook.run(
             sql=sql,
-            parameters=(uuid,),
         )
 
 
