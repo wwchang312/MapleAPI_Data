@@ -12,7 +12,7 @@ import time
 class AirflowKafkaConsumer(BaseConsumer):
     def __init__(self, group_id):
         super().__init__(group_id)
-        self.topics=['collect_maple_character_list_dag']
+        self.topics=['maple_character_api_param']
 
         conf = {
             'bootstrap.servers': self.BOOTSTRAP_SERVERS,
@@ -27,10 +27,22 @@ class AirflowKafkaConsumer(BaseConsumer):
     #consumer poll message
     def poll(self):
         try:
+
+            empty_since = None
+
             while True:
                 msg_lst = self.consumer.consume(num_messages=5,timeout=1.0)
                 if not msg_lst:
+                    if empty_since is None:
+                        empty_since = time.time()
+
+                    if time.time() - empty_since >= 10:
+                        self.logger.info('No messages for 10 seconds. Consumer stopped.')
+                        break
+
                     continue
+
+                empty_since = None
 
                 valid_msgs = []
 
@@ -78,7 +90,7 @@ class AirflowKafkaConsumer(BaseConsumer):
                             group_results[table_nm].append(con)
 
 
-                print(group_results)
+                self.logger.info(group_results)
 
                 self.consumer.commit(asynchronous=False)
 
