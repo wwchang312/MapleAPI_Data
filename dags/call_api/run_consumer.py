@@ -13,5 +13,5 @@ with DAG(
 
     run_consumer = BashOperator(
         task_id = 'run_consumer',
-        bash_command='consumers/airflow_kafka_consumer.py',
+        bash_command='pwd whoami ls -al',
     )
