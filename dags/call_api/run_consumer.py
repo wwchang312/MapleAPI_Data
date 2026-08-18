@@ -3,7 +3,7 @@ from airflow.sdk import DAG
 import pendulum
 
 with DAG(
-        dag_id='collect_maple_user_achievement_dag',
+        dag_id='run_consumer',
         schedule=None,  # 매주 정각 수행
         start_date=pendulum.datetime(2025, 8, 1, tz="Asia/Seoul"),
         tags=['Maple','Consumer'],
