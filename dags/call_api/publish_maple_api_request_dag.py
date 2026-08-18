@@ -1,6 +1,7 @@
 from airflow.sdk import DAG,Param
 from airflow.decorators import task
 from airflow.providers.apache.kafka.operators.produce import ProduceToTopicOperator
+from airflow.providers.odbc.hooks.odbc import OdbcHook
 from datetime import date
 from common.utils.date_param import DateParamBuild
 from common.utils.change_param import ChangeParma
@@ -74,12 +75,31 @@ with DAG(
         for character_name, date_param, data_nm in product(character_name_lst, date_param_lst, data_nm_lst):
             msg.append({
                    "run_id": run_id,
-                   "character_name": character_name,
+                   "character_name": trans_character_nm_to_ocid(character_name),
                    "date": date_param,
                    "data_nm": data_nm
                    })
 
         return msg
+
+
+    def trans_character_nm_to_ocid(character_name):
+        hook = OdbcHook(
+            odbc_conn_id='maple-rdbms-mssql',
+            driver="ODBC Driver 18 for SQL Server",
+        )
+
+        ocid = hook.get_first(
+            sql="""
+                        SELECT 
+                            ocid
+                        FROM maple.character_list
+                        WHERE character_name = ?
+                    """,
+            parameters=(character_name,),
+        )[0]
+
+        return ocid
 
 
     def publish_message(messages):
