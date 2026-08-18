@@ -5,38 +5,17 @@ import os
 api_key = os.environ['NEXON_API_KEY'] #.env파일에 API_KEY 정보 저장
 
 class MapleApiRequest:
-    def __init__(self, **kwargs):
+    def __init__(self, param:dict ):
         self.base_url = 'https://open.api.nexon.com/maplestory/v1/'
         self.headers = {"x-nxopen-api-key": api_key}
         self.character_skill_grade = ['0','1','1.5','2','2.5','3','4','hyperpassive','hyperactive','5','6']
-
-    def extract_param(self,msg_param_lst):
-
-
-
+        self.data_nm = param['data_nm']
+        self.ocid= param['character_name']
+        self.date= param['date']
 
 
 
-        con = self._call_api(self.base_url, self.data_nm, self.headers, self.date, self.ocid,
-                             self.character_skill_grade)
 
-        # 메이플 API에서 제공하고 있는 skill 파라미터에서, 일부 직업은 해당사항이 없어 빈값이 들어오는 경우, 가져오지 않기 위한 로직 추가
-        if 'character_skill' in con.keys():
-            if con['character_skill'] == []:
-                raise AirflowSkipException("직업에 해당하는 스킬 정보가 존재하지 않습니다.")
-
-        data = self.json_dumping(con)
-
-        # Mssql Server connect
-        hook = OdbcHook(odbc_conn_id='conn-db-mssql-maple',
-                        driver="ODBC Driver 18 for SQL Server")  # Airflow connection정보
-        sql = "EXEC SP_INSERT_DATA @table_nm = ? , @json =?"
-
-        json = data
-        table_nm = self.data_nm.replace('/', '_').replace('-', '_')
-        params = (table_nm, json)
-        print(f'테이블 {table_nm}으로 데이터를 업데이트합니다.')
-        hook.run(sql, parameters=params)
 
     def _call_api(self, base_url, data_nm, headers, date: str | None = None, ocid: str | None = None,
                   character_skill_grade: str | None = None):
@@ -96,3 +75,9 @@ class MapleApiRequest:
         json_str = json.dumps(empty_list, ensure_ascii=False)
         json_str = json_str.replace("'", "''")  # 일부 값이 '가 들어있어 dumping 과정에서 문자열이 손상되는 경우가 있어 이를 대비하기 위해 추가
         return json_str
+
+    def run(self):
+        con = self._call_api(self.base_url, self.data_nm, self.headers, self.date, self.ocid,self.character_skill_grade)
+        # data = self.json_dumping(con)
+        table_nm =self.data_nm.replace('/','_')
+        return con,table_nm
