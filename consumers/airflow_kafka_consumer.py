@@ -82,13 +82,15 @@ class AirflowKafkaConsumer(BaseConsumer):
                     ]
 
                     for future in as_completed(futures):
+                        self.logger.debug(future.result())
+                        """
                         con,table_nm = future.result()
-
+                        
                         if isinstance(con,list):
                             group_results[table_nm].extend(con)
                         else:
                             group_results[table_nm].append(con)
-
+                        """
 
                 self.logger.info(group_results)
 
